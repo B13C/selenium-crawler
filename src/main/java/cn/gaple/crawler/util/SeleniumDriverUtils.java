@@ -1,11 +1,15 @@
 package cn.gaple.crawler.util;
 
-import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 
+import java.util.Collections;
+
+/**
+ * 参考  http://www.51testing.com/html/53/15344953-7792295.html
+ */
 public class SeleniumDriverUtils {
     private SeleniumDriverUtils() {
     }
@@ -17,23 +21,29 @@ public class SeleniumDriverUtils {
      * @return ChromeDriver
      */
     public static ChromeDriver chromeWebDriver(String chromedriverPath) {
-        WebDriverManager.chromedriver().setup();
         System.setProperty("webdriver.chrome.driver", chromedriverPath);
         ChromeOptions chromeOptions = new ChromeOptions();
-        //chromeOptions.addArguments("--screenshot");
-        //chromeOptions.addArguments("--headless");
+        chromeOptions.addArguments("--headless");
+        // 启动进入隐身模式
         chromeOptions.addArguments("--incognito");
+        // 隐藏滚动条, 应对一些特殊页面
         chromeOptions.addArguments("--hide-scrollbars");
+        // 以最高权限运行
         chromeOptions.addArguments("--no-sandbox");
-        //chromeOptions.addArguments("blink-settings=imagesEnabled=false");
-        chromeOptions.addArguments(/*"--no-sandbox",*/ "--disable-dev-shm-usage"/*, "--disable-gpu", "--allowed-ips"*/);
+        //  不加载图片, 提升速度
+        // chromeOptions.addArguments("blink-settings=imagesEnabled=false");
+        // 禁用JavaScript
+        chromeOptions.addArguments("--disable-javascript");
+        // 禁用图像
+        chromeOptions.addArguments("--disable-images");
+        chromeOptions.addArguments("--disable-dev-shm-usage");
         chromeOptions.addArguments("--disable-gpu");
         chromeOptions.addArguments("--ignore-certificate-errors");
-        //chromeOptions.addArguments("blink-settings=imagesEnabled=false", "--disable-gpu");
-        chromeOptions.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
-        //chromeOptions.setExperimentalOption("useAutomationExtension", false);
-        //chromeOptions.addArguments("--windows-size=1920,1080");
-        chromeOptions.setHeadless(true);
+        chromeOptions.addArguments("--disable-infobars");
+        chromeOptions.addArguments("--disable-blink-features=AutomationControlled");
+        // 设置开发者模式启动，该模式下webdriver属性为正常值
+        chromeOptions.setExperimentalOption("excludeSwitches", Collections.singletonList("enable-automation"));
+        chromeOptions.setExperimentalOption("useAutomationExtension", false);
         return new ChromeDriver(chromeOptions);
     }
 
@@ -45,36 +55,30 @@ public class SeleniumDriverUtils {
      * @return FirefoxDriver
      */
     public static FirefoxDriver firefoxDriver(String firefoxDriverPath) {
-        // WebDriverManager.chromedriver().setup();
         System.setProperty("webdriver.gecko.driver", firefoxDriverPath);
         FirefoxOptions firefoxOptions = new FirefoxOptions();
         // 设置无头浏览  不显示浏览器界面
-        // firefoxOptions.setHeadless(true);
         firefoxOptions.addArguments("--headless");
         firefoxOptions.addArguments("--incognito");
         // 禁止GPU渲染
         firefoxOptions.addArguments("--disable-gpu");
-        //firefoxOptions.addArguments("--no-sandbox");
+        firefoxOptions.addArguments("--no-sandbox");
         // 禁止浏览器被自动化的提示
-        //firefoxOptions.addArguments("--disable-infobars");
+        firefoxOptions.addArguments("--disable-infobars");
         //反爬关键：window.navigator.webdriver值=false
         firefoxOptions.setCapability("dom.webdriver.enabled", false);
-        // 忽略错误   不能添加  添加之后报错
-        // firefoxOptions.addArguments("--ignore-certificate-errors");
-        // 禁止图片渲染
-        // firefoxOptions.addArguments("blink-settings=imagesEnabled=false");
-        // 禁止加载图片
-        // firefoxOptions.SetPreference("permissions.default.image", 2);
+        // 忽略错误
+        firefoxOptions.addArguments("--ignore-certificate-errors");
+        // 设置隐身模式  可以加快速度 但是 无样式数据
+        // firefoxOptions.addArguments("--private");
         // 安全模式启动
-        // firefoxOptions.AddArgument("-safe-mode");
+        firefoxOptions.addArguments("-safe-mode");
+        // 禁止加载图片
+        firefoxOptions.setCapability("permissions.default.image", 2);
         // 禁止js
-        // firefoxOptions.SetPreference("javascript.enabled", false);
-        // 本地代理
-        // firefoxOptions.AddArgument("--proxy--server=127.0.0.1:8080");
+        firefoxOptions.setCapability("javascript.enabled", false);
         // 禁止加载css样式
-        // firefoxOptions.SetPreference("permissions.default.stylesheet", 2);
-        // 设置隐身模式
-        // firefoxOptions.AddArgument("--private");
+        firefoxOptions.setCapability("permissions.default.stylesheet", 2);
         //禁用缓存
         firefoxOptions.setCapability("network.http.use-cache", true);
         firefoxOptions.setCapability("browser.cache.memory.enable", true);
