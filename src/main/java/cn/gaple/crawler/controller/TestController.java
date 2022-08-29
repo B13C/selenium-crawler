@@ -119,4 +119,20 @@ public class TestController implements GXBaseController {
         SeleniumCrawlerUtils.getPDFByChromeDriver(url, driverPath, By.className("textWrap"), "C:\\Users\\mapleaf\\龙源.pdf", 240);
         return GXResultUtils.ok(Dict.create().set("username", "塵渊"));
     }
+
+    @GetMapping("html-firefox")
+    public GXResultUtils<Dict> getHtmlByFirefox() {
+        String driverPath = "C:\\tools\\webdriver\\geckodriver.exe";
+        String url = "http://www.cqvip.com/qikan/Detail.aspx?gch=95519X&years=2021&num=4";
+        String htmlByFirefoxWebDriver = SeleniumCrawlerUtils.getHtmlByFirefoxWebDriver(url, driverPath, By.className("qkxq-content"), 120);
+        return GXResultUtils.ok(Dict.create().set("html", htmlByFirefoxWebDriver));
+    }
+
+    @GetMapping("html-chrome")
+    public GXResultUtils<Dict> getHtmlByChrome() {
+        String driverPath = "C:\\tools\\webdriver\\chromedriver.exe";
+        String url = "https://s.wanfangdata.com.cn/periodical?q=CPU";
+        String htmlByFirefoxWebDriver = SeleniumCrawlerUtils.getHtmlByChromeWebDriver(url, driverPath, By.className("top-control-bar"), 120);
+        return GXResultUtils.ok(Dict.create().set("html", htmlByFirefoxWebDriver));
+    }
 }

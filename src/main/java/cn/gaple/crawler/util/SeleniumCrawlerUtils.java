@@ -11,7 +11,6 @@ import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import ru.yandex.qatools.ashot.AShot;
@@ -34,34 +33,40 @@ public class SeleniumCrawlerUtils {
     /**
      * 获取指定URL的html
      *
-     * @param url                待获取的URL
-     * @param driverPath         驱动的可执行文件路径
-     * @param expectedConditions 期望继续执行的条件
-     * @param timeOut            超时时间 单位 秒
+     * @param url        待获取的URL
+     * @param driverPath 驱动的可执行文件路径
+     * @param locator    期望继续执行的条件
+     * @param timeOut    超时时间 单位 秒
      * @return HTML
      */
-    public static String getHtmlByChromeWebDriver(String url, String driverPath, ExpectedCondition<WebElement> expectedConditions, Integer timeOut) {
+    public static String getHtmlByChromeWebDriver(String url, String driverPath, By locator, Integer timeOut) {
         ChromeDriver chromeDriver = SeleniumDriverUtils.chromeWebDriver(driverPath);
+        chromeDriver.manage().window().setSize(new Dimension(1920, 1080));
+        chromeDriver.manage().timeouts().implicitlyWait(Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
         chromeDriver.get(url);
         WebDriverWait webDriverWait = new WebDriverWait(chromeDriver, Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
-        webDriverWait.until(expectedConditions);
+        WebElement locatorElement = chromeDriver.findElement(locator);
+        webDriverWait.until(ExpectedConditions.visibilityOf(locatorElement));
         return chromeDriver.getPageSource();
     }
 
     /**
      * 获取指定URL的html
      *
-     * @param url                待获取的URL
-     * @param driverPath         驱动的可执行文件路径
-     * @param expectedConditions 期望继续执行的条件
-     * @param timeOut            超时时间 单位 秒
+     * @param url        待获取的URL
+     * @param driverPath 驱动的可执行文件路径
+     * @param locator    期望继续执行的条件
+     * @param timeOut    超时时间 单位 秒
      * @return HTML
      */
-    public static String getHtmlByFirefoxWebDriver(String url, String driverPath, ExpectedCondition<WebElement> expectedConditions, Integer timeOut) {
+    public static String getHtmlByFirefoxWebDriver(String url, String driverPath, By locator, Integer timeOut) {
         FirefoxDriver firefoxDriver = SeleniumDriverUtils.firefoxDriver(driverPath);
+        firefoxDriver.manage().window().setSize(new Dimension(1920, 1080));
+        firefoxDriver.manage().timeouts().implicitlyWait(Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
         firefoxDriver.get(url);
         WebDriverWait webDriverWait = new WebDriverWait(firefoxDriver, Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
-        webDriverWait.until(expectedConditions);
+        WebElement locatorElement = firefoxDriver.findElement(locator);
+        webDriverWait.until(ExpectedConditions.visibilityOf(locatorElement));
         return firefoxDriver.getPageSource();
     }
 
@@ -78,11 +83,11 @@ public class SeleniumCrawlerUtils {
     public static String getScreenshotByChromeDriver(String url, String driverPath, By locator, String screenshotSavePath, Integer timeOut) {
         ChromeDriver chromeDriver = SeleniumDriverUtils.chromeWebDriver(driverPath);
         chromeDriver.manage().window().setSize(new Dimension(1920, 1080));
-        chromeDriver.manage().timeouts().implicitlyWait(Duration.of(120, TimeUnit.SECONDS.toChronoUnit()));
+        chromeDriver.manage().timeouts().implicitlyWait(Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
         chromeDriver.get(url);
         WebDriverWait webDriverWait = new WebDriverWait(chromeDriver, Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
-        WebElement detailInfoWebElement = chromeDriver.findElement(locator);
-        webDriverWait.until(ExpectedConditions.visibilityOf(detailInfoWebElement));
+        WebElement locatorElement = chromeDriver.findElement(locator);
+        webDriverWait.until(ExpectedConditions.visibilityOf(locatorElement));
         Screenshot screenshot = new AShot().shootingStrategy(ShootingStrategies.viewportPasting(1200)).takeScreenshot(chromeDriver);
         try {
             ImageIO.write(screenshot.getImage(), "png", new File(screenshotSavePath));
@@ -105,11 +110,11 @@ public class SeleniumCrawlerUtils {
     public static String getScreenshotByFirefoxDriver(String url, String driverPath, By locator, String screenshotSavePath, Integer timeOut) {
         FirefoxDriver firefoxDriver = SeleniumDriverUtils.firefoxDriver(driverPath);
         firefoxDriver.manage().window().setSize(new Dimension(1920, 1080));
-        firefoxDriver.manage().timeouts().implicitlyWait(Duration.of(120, TimeUnit.SECONDS.toChronoUnit()));
+        firefoxDriver.manage().timeouts().implicitlyWait(Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
         firefoxDriver.get(url);
         WebDriverWait webDriverWait = new WebDriverWait(firefoxDriver, Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
-        WebElement detailInfoWebElement = firefoxDriver.findElement(locator);
-        webDriverWait.until(ExpectedConditions.visibilityOf(detailInfoWebElement));
+        WebElement locatorElement = firefoxDriver.findElement(locator);
+        webDriverWait.until(ExpectedConditions.visibilityOf(locatorElement));
         Screenshot screenshot = new AShot().shootingStrategy(ShootingStrategies.viewportPasting(1200)).takeScreenshot(firefoxDriver);
         try {
             ImageIO.write(screenshot.getImage(), "png", new File(screenshotSavePath));
@@ -132,11 +137,11 @@ public class SeleniumCrawlerUtils {
     public static String getPDFByChromeDriver(String url, String driverPath, By locator, String pdfSavePath, Integer timeOut) {
         ChromeDriver chromeDriver = SeleniumDriverUtils.chromeWebDriver(driverPath);
         chromeDriver.manage().window().setSize(new Dimension(1920, 1080));
-        chromeDriver.manage().timeouts().implicitlyWait(Duration.of(120, TimeUnit.SECONDS.toChronoUnit()));
+        chromeDriver.manage().timeouts().implicitlyWait(Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
         chromeDriver.get(url);
         WebDriverWait webDriverWait = new WebDriverWait(chromeDriver, Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
-        WebElement detailInfoWebElement = chromeDriver.findElement(locator);
-        webDriverWait.until(ExpectedConditions.visibilityOf(detailInfoWebElement));
+        WebElement locatorElement = chromeDriver.findElement(locator);
+        webDriverWait.until(ExpectedConditions.visibilityOf(locatorElement));
         Screenshot screenshot = new AShot().shootingStrategy(ShootingStrategies.viewportPasting(1200)).takeScreenshot(chromeDriver);
         try {
             screenshotConvertPDF(screenshot, pdfSavePath);
@@ -159,11 +164,11 @@ public class SeleniumCrawlerUtils {
     public static String getPDFByFirefoxDriver(String url, String driverPath, By locator, String pdfSavePath, Integer timeOut) {
         FirefoxDriver firefoxDriver = SeleniumDriverUtils.firefoxDriver(driverPath);
         firefoxDriver.manage().window().setSize(new Dimension(1920, 1080));
-        firefoxDriver.manage().timeouts().implicitlyWait(Duration.of(120, TimeUnit.SECONDS.toChronoUnit()));
+        firefoxDriver.manage().timeouts().implicitlyWait(Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
         firefoxDriver.get(url);
         WebDriverWait webDriverWait = new WebDriverWait(firefoxDriver, Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
-        WebElement detailInfoWebElement = firefoxDriver.findElement(locator);
-        webDriverWait.until(ExpectedConditions.visibilityOf(detailInfoWebElement));
+        WebElement locatorElement = firefoxDriver.findElement(locator);
+        webDriverWait.until(ExpectedConditions.visibilityOf(locatorElement));
         Screenshot screenshot = new AShot().shootingStrategy(ShootingStrategies.viewportPasting(1200)).takeScreenshot(firefoxDriver);
         try {
             screenshotConvertPDF(screenshot, pdfSavePath);
