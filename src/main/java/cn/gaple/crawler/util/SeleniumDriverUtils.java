@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Objects;
@@ -57,10 +58,12 @@ public class SeleniumDriverUtils {
         ChromeDriver chromeDriver = new ChromeDriver(chromeOptions);
         Dict scriptToEvaluate = Dict.create().set("source", "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})");
         String jsContent;
-        try {
-            byte[] bytes = Objects.requireNonNull(SeleniumDriverUtils.class.getClassLoader().getResourceAsStream("stealth.min.js")).readAllBytes();
-            jsContent = new String(bytes, StandardCharsets.UTF_8);
-            scriptToEvaluate.put("source", jsContent);
+        try (InputStream resourceAsStream = SeleniumDriverUtils.class.getClassLoader().getResourceAsStream("stealth.min.js")) {
+            if (Objects.nonNull(resourceAsStream)) {
+                byte[] bytes = resourceAsStream.readAllBytes();
+                jsContent = new String(bytes, StandardCharsets.UTF_8);
+                scriptToEvaluate.put("source", jsContent);
+            }
         } catch (IOException e) {
             LOGGER.error("stealth.min.js文件不存在");
         }
