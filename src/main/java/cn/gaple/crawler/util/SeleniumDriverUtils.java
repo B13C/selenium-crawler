@@ -1,17 +1,26 @@
 package cn.gaple.crawler.util;
 
+import cn.hutool.core.lang.Dict;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.Objects;
 
 /**
  * 参考  http://www.51testing.com/html/53/15344953-7792295.html
  */
 public class SeleniumDriverUtils {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SeleniumDriverUtils.class);
+
     private SeleniumDriverUtils() {
+
     }
 
     /**
@@ -40,11 +49,22 @@ public class SeleniumDriverUtils {
         chromeOptions.addArguments("--disable-gpu");
         chromeOptions.addArguments("--ignore-certificate-errors");
         chromeOptions.addArguments("--disable-infobars");
+        chromeOptions.addArguments("--disable-blink-features");
         chromeOptions.addArguments("--disable-blink-features=AutomationControlled");
         // 设置开发者模式启动，该模式下webdriver属性为正常值
         chromeOptions.setExperimentalOption("excludeSwitches", Collections.singletonList("enable-automation"));
         chromeOptions.setExperimentalOption("useAutomationExtension", false);
-        return new ChromeDriver(chromeOptions);
+        ChromeDriver chromeDriver = new ChromeDriver(chromeOptions);
+        chromeDriver.executeCdpCommand("Page.addScriptToEvaluateOnNewDocument", Dict.create().set("source", "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})"));
+        String jsContent;
+        try {
+            byte[] bytes = Objects.requireNonNull(SeleniumDriverUtils.class.getClassLoader().getResourceAsStream("stealth.min.js")).readAllBytes();
+            jsContent = new String(bytes, StandardCharsets.UTF_8);
+            chromeDriver.executeCdpCommand("Page.addScriptToEvaluateOnNewDocument", Dict.create().set("source", jsContent));
+        } catch (IOException e) {
+            LOGGER.error("stealth.min.js文件不存在");
+        }
+        return chromeDriver;
     }
 
     /**
