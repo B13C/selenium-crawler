@@ -1,0 +1,9 @@
+/.idea/
+target
+**/target
+**/*.iml
+**/resources/local
+**/application-local.yml
+config/local
+config/application-local.yml
+spy.log
