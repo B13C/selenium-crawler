@@ -55,15 +55,16 @@ public class SeleniumDriverUtils {
         chromeOptions.setExperimentalOption("excludeSwitches", Collections.singletonList("enable-automation"));
         chromeOptions.setExperimentalOption("useAutomationExtension", false);
         ChromeDriver chromeDriver = new ChromeDriver(chromeOptions);
-        chromeDriver.executeCdpCommand("Page.addScriptToEvaluateOnNewDocument", Dict.create().set("source", "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})"));
+        Dict scriptToEvaluate = Dict.create().set("source", "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})");
         String jsContent;
         try {
             byte[] bytes = Objects.requireNonNull(SeleniumDriverUtils.class.getClassLoader().getResourceAsStream("stealth.min.js")).readAllBytes();
             jsContent = new String(bytes, StandardCharsets.UTF_8);
-            chromeDriver.executeCdpCommand("Page.addScriptToEvaluateOnNewDocument", Dict.create().set("source", jsContent));
+            scriptToEvaluate.put("source", jsContent);
         } catch (IOException e) {
             LOGGER.error("stealth.min.js文件不存在");
         }
+        chromeDriver.executeCdpCommand("Page.addScriptToEvaluateOnNewDocument", scriptToEvaluate);
         return chromeDriver;
     }
 
