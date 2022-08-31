@@ -1,5 +1,7 @@
 package cn.gaple.crawler.util;
 
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.lang.Dict;
 import cn.maple.core.framework.exception.GXBusinessException;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
@@ -22,7 +24,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class SeleniumCrawlerUtils {
@@ -202,5 +206,28 @@ public class SeleniumCrawlerUtils {
         document.add(instance);
         document.close();
         writer.close();
+    }
+
+    /**
+     * 获取指定URL的内容 并将其保存为MHTML文件
+     *
+     * @param url           待获取内容的URL
+     * @param driverPath    驱动路径
+     * @param locator       定位元素
+     * @param mHtmlSavePath 保存的地址
+     * @param timeOut       超时时间
+     * @return 文件路径
+     */
+    public static String saveMHTMLByChrome(String url, String driverPath, By locator, String mHtmlSavePath, Integer timeOut) {
+        ChromeDriver chromeWebDriver = SeleniumDriverUtils.chromeWebDriver(driverPath);
+        chromeWebDriver.manage().window().setSize(new Dimension(1920, 1080));
+        chromeWebDriver.manage().timeouts().implicitlyWait(Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
+        chromeWebDriver.get(url);
+        WebDriverWait webDriverWait = new WebDriverWait(chromeWebDriver, Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
+        WebElement locatorElement = chromeWebDriver.findElement(locator);
+        webDriverWait.until(ExpectedConditions.visibilityOf(locatorElement));
+        Map<String, Object> data = chromeWebDriver.executeCdpCommand("Page.captureSnapshot", Dict.create());
+        FileUtil.writeString(data.get("data").toString(), mHtmlSavePath, StandardCharsets.UTF_8);
+        return mHtmlSavePath;
     }
 }
