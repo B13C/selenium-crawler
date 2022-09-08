@@ -45,13 +45,17 @@ public class SeleniumCrawlerUtils {
      */
     public static String getHtmlByChromeWebDriver(String url, String driverPath, By locator, Integer timeOut) {
         ChromeDriver chromeDriver = SeleniumDriverUtils.chromeWebDriver(driverPath);
-        chromeDriver.manage().window().setSize(new Dimension(1920, 1080));
-        chromeDriver.manage().timeouts().implicitlyWait(Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
-        chromeDriver.get(url);
-        WebDriverWait webDriverWait = new WebDriverWait(chromeDriver, Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
-        WebElement locatorElement = chromeDriver.findElement(locator);
-        webDriverWait.until(ExpectedConditions.visibilityOf(locatorElement));
-        return chromeDriver.getPageSource();
+        try {
+            chromeDriver.manage().window().setSize(new Dimension(1920, 1080));
+            chromeDriver.manage().timeouts().implicitlyWait(Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
+            chromeDriver.get(url);
+            WebDriverWait webDriverWait = new WebDriverWait(chromeDriver, Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
+            WebElement locatorElement = chromeDriver.findElement(locator);
+            webDriverWait.until(ExpectedConditions.visibilityOf(locatorElement));
+            return chromeDriver.getPageSource();
+        } finally {
+            chromeDriver.close();
+        }
     }
 
     /**
@@ -65,13 +69,17 @@ public class SeleniumCrawlerUtils {
      */
     public static String getHtmlByFirefoxWebDriver(String url, String driverPath, By locator, Integer timeOut) {
         FirefoxDriver firefoxDriver = SeleniumDriverUtils.firefoxDriver(driverPath);
-        firefoxDriver.manage().window().setSize(new Dimension(1920, 1080));
-        firefoxDriver.manage().timeouts().implicitlyWait(Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
-        firefoxDriver.get(url);
-        WebDriverWait webDriverWait = new WebDriverWait(firefoxDriver, Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
-        WebElement locatorElement = firefoxDriver.findElement(locator);
-        webDriverWait.until(ExpectedConditions.visibilityOf(locatorElement));
-        return firefoxDriver.getPageSource();
+        try {
+            firefoxDriver.manage().window().setSize(new Dimension(1920, 1080));
+            firefoxDriver.manage().timeouts().implicitlyWait(Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
+            firefoxDriver.get(url);
+            WebDriverWait webDriverWait = new WebDriverWait(firefoxDriver, Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
+            WebElement locatorElement = firefoxDriver.findElement(locator);
+            webDriverWait.until(ExpectedConditions.visibilityOf(locatorElement));
+            return firefoxDriver.getPageSource();
+        } finally {
+            firefoxDriver.close();
+        }
     }
 
     /**
@@ -86,19 +94,23 @@ public class SeleniumCrawlerUtils {
      */
     public static String getScreenshotByChromeDriver(String url, String driverPath, By locator, String screenshotSavePath, Integer timeOut) {
         ChromeDriver chromeDriver = SeleniumDriverUtils.chromeWebDriver(driverPath);
-        chromeDriver.manage().window().setSize(new Dimension(1920, 1080));
-        chromeDriver.manage().timeouts().implicitlyWait(Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
-        chromeDriver.get(url);
-        WebDriverWait webDriverWait = new WebDriverWait(chromeDriver, Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
-        WebElement locatorElement = chromeDriver.findElement(locator);
-        webDriverWait.until(ExpectedConditions.visibilityOf(locatorElement));
-        Screenshot screenshot = new AShot().shootingStrategy(ShootingStrategies.viewportPasting(1200)).takeScreenshot(chromeDriver);
         try {
-            ImageIO.write(screenshot.getImage(), "png", new File(screenshotSavePath));
-        } catch (IOException e) {
-            throw new GXBusinessException("获取截屏数据失败", e);
+            chromeDriver.manage().window().setSize(new Dimension(1920, 1080));
+            chromeDriver.manage().timeouts().implicitlyWait(Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
+            chromeDriver.get(url);
+            WebDriverWait webDriverWait = new WebDriverWait(chromeDriver, Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
+            WebElement locatorElement = chromeDriver.findElement(locator);
+            webDriverWait.until(ExpectedConditions.visibilityOf(locatorElement));
+            Screenshot screenshot = new AShot().shootingStrategy(ShootingStrategies.viewportPasting(1200)).takeScreenshot(chromeDriver);
+            try {
+                ImageIO.write(screenshot.getImage(), "png", new File(screenshotSavePath));
+            } catch (IOException e) {
+                throw new GXBusinessException("获取截屏数据失败", e);
+            }
+            return chromeDriver.getPageSource();
+        } finally {
+            chromeDriver.close();
         }
-        return chromeDriver.getPageSource();
     }
 
     /**
@@ -113,19 +125,23 @@ public class SeleniumCrawlerUtils {
      */
     public static String getScreenshotByFirefoxDriver(String url, String driverPath, By locator, String screenshotSavePath, Integer timeOut) {
         FirefoxDriver firefoxDriver = SeleniumDriverUtils.firefoxDriver(driverPath);
-        firefoxDriver.manage().window().setSize(new Dimension(1920, 1080));
-        firefoxDriver.manage().timeouts().implicitlyWait(Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
-        firefoxDriver.get(url);
-        WebDriverWait webDriverWait = new WebDriverWait(firefoxDriver, Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
-        WebElement locatorElement = firefoxDriver.findElement(locator);
-        webDriverWait.until(ExpectedConditions.visibilityOf(locatorElement));
-        Screenshot screenshot = new AShot().shootingStrategy(ShootingStrategies.viewportPasting(1200)).takeScreenshot(firefoxDriver);
         try {
-            ImageIO.write(screenshot.getImage(), "png", new File(screenshotSavePath));
-        } catch (IOException e) {
-            throw new GXBusinessException("获取截屏数据失败", e);
+            firefoxDriver.manage().window().setSize(new Dimension(1920, 1080));
+            firefoxDriver.manage().timeouts().implicitlyWait(Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
+            firefoxDriver.get(url);
+            WebDriverWait webDriverWait = new WebDriverWait(firefoxDriver, Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
+            WebElement locatorElement = firefoxDriver.findElement(locator);
+            webDriverWait.until(ExpectedConditions.visibilityOf(locatorElement));
+            Screenshot screenshot = new AShot().shootingStrategy(ShootingStrategies.viewportPasting(1200)).takeScreenshot(firefoxDriver);
+            try {
+                ImageIO.write(screenshot.getImage(), "png", new File(screenshotSavePath));
+            } catch (IOException e) {
+                throw new GXBusinessException("获取截屏数据失败", e);
+            }
+            return firefoxDriver.getPageSource();
+        } finally {
+            firefoxDriver.close();
         }
-        return firefoxDriver.getPageSource();
     }
 
     /**
@@ -140,19 +156,23 @@ public class SeleniumCrawlerUtils {
      */
     public static String getPDFByChromeDriver(String url, String driverPath, By locator, String pdfSavePath, Integer timeOut) {
         ChromeDriver chromeDriver = SeleniumDriverUtils.chromeWebDriver(driverPath);
-        chromeDriver.manage().window().setSize(new Dimension(1920, 1080));
-        chromeDriver.manage().timeouts().implicitlyWait(Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
-        chromeDriver.get(url);
-        WebDriverWait webDriverWait = new WebDriverWait(chromeDriver, Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
-        WebElement locatorElement = chromeDriver.findElement(locator);
-        webDriverWait.until(ExpectedConditions.visibilityOf(locatorElement));
-        Screenshot screenshot = new AShot().shootingStrategy(ShootingStrategies.viewportPasting(1200)).takeScreenshot(chromeDriver);
         try {
-            screenshotConvertPDF(screenshot, pdfSavePath);
-        } catch (DocumentException | IOException e) {
-            throw new GXBusinessException("获取PDF数据失败", e);
+            chromeDriver.manage().window().setSize(new Dimension(1920, 1080));
+            chromeDriver.manage().timeouts().implicitlyWait(Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
+            chromeDriver.get(url);
+            WebDriverWait webDriverWait = new WebDriverWait(chromeDriver, Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
+            WebElement locatorElement = chromeDriver.findElement(locator);
+            webDriverWait.until(ExpectedConditions.visibilityOf(locatorElement));
+            Screenshot screenshot = new AShot().shootingStrategy(ShootingStrategies.viewportPasting(1200)).takeScreenshot(chromeDriver);
+            try {
+                screenshotConvertPDF(screenshot, pdfSavePath);
+            } catch (DocumentException | IOException e) {
+                throw new GXBusinessException("获取PDF数据失败", e);
+            }
+            return chromeDriver.getPageSource();
+        } finally {
+            chromeDriver.close();
         }
-        return chromeDriver.getPageSource();
     }
 
     /**
@@ -167,19 +187,23 @@ public class SeleniumCrawlerUtils {
      */
     public static String getPDFByFirefoxDriver(String url, String driverPath, By locator, String pdfSavePath, Integer timeOut) {
         FirefoxDriver firefoxDriver = SeleniumDriverUtils.firefoxDriver(driverPath);
-        firefoxDriver.manage().window().setSize(new Dimension(1920, 1080));
-        firefoxDriver.manage().timeouts().implicitlyWait(Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
-        firefoxDriver.get(url);
-        WebDriverWait webDriverWait = new WebDriverWait(firefoxDriver, Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
-        WebElement locatorElement = firefoxDriver.findElement(locator);
-        webDriverWait.until(ExpectedConditions.visibilityOf(locatorElement));
-        Screenshot screenshot = new AShot().shootingStrategy(ShootingStrategies.viewportPasting(1200)).takeScreenshot(firefoxDriver);
         try {
-            screenshotConvertPDF(screenshot, pdfSavePath);
-        } catch (DocumentException | IOException e) {
-            throw new GXBusinessException("获取PDF数据失败", e);
+            firefoxDriver.manage().window().setSize(new Dimension(1920, 1080));
+            firefoxDriver.manage().timeouts().implicitlyWait(Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
+            firefoxDriver.get(url);
+            WebDriverWait webDriverWait = new WebDriverWait(firefoxDriver, Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
+            WebElement locatorElement = firefoxDriver.findElement(locator);
+            webDriverWait.until(ExpectedConditions.visibilityOf(locatorElement));
+            Screenshot screenshot = new AShot().shootingStrategy(ShootingStrategies.viewportPasting(1200)).takeScreenshot(firefoxDriver);
+            try {
+                screenshotConvertPDF(screenshot, pdfSavePath);
+            } catch (DocumentException | IOException e) {
+                throw new GXBusinessException("获取PDF数据失败", e);
+            }
+            return firefoxDriver.getPageSource();
+        } finally {
+            firefoxDriver.close();
         }
-        return firefoxDriver.getPageSource();
     }
 
 
