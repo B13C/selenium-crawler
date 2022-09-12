@@ -17,7 +17,7 @@
         <selenium-java.version>4.4.0</selenium-java.version>
         <webdrivermanager.version>5.2.3</webdrivermanager.version>
         <ashot.version>1.5.4</ashot.version>
-        <itextpdf.version>5.5.12</itextpdf.version>
+        <itextpdf.version>5.5.13.3</itextpdf.version>
         <itext-asian.version>5.2.0</itext-asian.version>
         <phantomjsdriver.version>1.5.0</phantomjsdriver.version>
     </properties>
@@ -72,6 +72,12 @@
             <groupId>com.itextpdf</groupId>
             <artifactId>itext-asian</artifactId>
             <version>${itext-asian.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.codeborne</groupId>
+            <artifactId>phantomjsdriver</artifactId>
+            <version>${phantomjsdriver.version}</version>
         </dependency>
 
     </dependencies>

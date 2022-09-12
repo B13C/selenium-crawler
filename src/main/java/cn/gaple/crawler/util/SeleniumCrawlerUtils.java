@@ -3,6 +3,7 @@ package cn.gaple.crawler.util;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.lang.Dict;
 import cn.maple.core.framework.exception.GXBusinessException;
+import cn.maple.core.framework.util.GXResultUtils;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Image;
@@ -13,6 +14,10 @@ import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.phantomjs.PhantomJSDriver;
+import org.openqa.selenium.phantomjs.PhantomJSDriverService;
+import org.openqa.selenium.remote.Browser;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import ru.yandex.qatools.ashot.AShot;
@@ -83,6 +88,30 @@ public class SeleniumCrawlerUtils {
     }
 
     /**
+     * 获取指定URL的html
+     *
+     * @param url        待获取的URL
+     * @param driverPath 驱动的可执行文件路径
+     * @param locator    期望继续执行的条件
+     * @param timeOut    超时时间 单位 秒
+     * @return HTML
+     */
+    public static String getHtmlByPhantomJSDriver(String url, String driverPath, By locator, Integer timeOut) {
+        PhantomJSDriver phantomJSDriver = SeleniumDriverUtils.phantomJSDriver(driverPath);
+        try {
+            phantomJSDriver.manage().window().setSize(new Dimension(1920, 1080));
+            phantomJSDriver.manage().timeouts().implicitlyWait(Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
+            phantomJSDriver.get(url);
+            WebDriverWait webDriverWait = new WebDriverWait(phantomJSDriver, Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
+            WebElement locatorElement = phantomJSDriver.findElement(locator);
+            webDriverWait.until(ExpectedConditions.visibilityOf(locatorElement));
+            return phantomJSDriver.getPageSource();
+        } finally {
+            phantomJSDriver.close();
+        }
+    }
+
+    /**
      * 获取截屏数据
      *
      * @param url                待截屏URL
@@ -110,6 +139,37 @@ public class SeleniumCrawlerUtils {
             return chromeDriver.getPageSource();
         } finally {
             chromeDriver.close();
+        }
+    }
+
+    /**
+     * 获取截屏数据
+     *
+     * @param url                待截屏URL
+     * @param driverPath         驱动的可执行文件路径
+     * @param locator            期望继续执行的条件
+     * @param screenshotSavePath 截屏图片保存路径
+     * @param timeOut            超时时间 单位 秒
+     * @return HTML 文件
+     */
+    public static String getScreenshotByPhantomJSDriver(String url, String driverPath, By locator, String screenshotSavePath, Integer timeOut) {
+        PhantomJSDriver phantomJSDriver = SeleniumDriverUtils.phantomJSDriver(driverPath);
+        try {
+            phantomJSDriver.manage().window().setSize(new Dimension(1920, 1080));
+            phantomJSDriver.manage().timeouts().implicitlyWait(Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
+            phantomJSDriver.get(url);
+            WebDriverWait webDriverWait = new WebDriverWait(phantomJSDriver, Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
+            WebElement locatorElement = phantomJSDriver.findElement(locator);
+            webDriverWait.until(ExpectedConditions.visibilityOf(locatorElement));
+            Screenshot screenshot = new AShot().shootingStrategy(ShootingStrategies.viewportPasting(1200)).takeScreenshot(phantomJSDriver);
+            try {
+                ImageIO.write(screenshot.getImage(), "png", new File(screenshotSavePath));
+            } catch (IOException e) {
+                throw new GXBusinessException("获取截屏数据失败", e);
+            }
+            return phantomJSDriver.getPageSource();
+        } finally {
+            phantomJSDriver.close();
         }
     }
 
@@ -172,6 +232,37 @@ public class SeleniumCrawlerUtils {
             return chromeDriver.getPageSource();
         } finally {
             chromeDriver.close();
+        }
+    }
+
+    /**
+     * 取PDF数据
+     *
+     * @param url         待获取的PDF的URL
+     * @param driverPath  驱动的可执行文件路径
+     * @param locator     期望继续执行的条件
+     * @param pdfSavePath 截屏图片保存路径
+     * @param timeOut     超时时间 单位 秒
+     * @return HTML 文件
+     */
+    public static String getPDFByPhantomJSDriver(String url, String driverPath, By locator, String pdfSavePath, Integer timeOut) {
+        PhantomJSDriver phantomJSDriver = SeleniumDriverUtils.phantomJSDriver(driverPath);
+        try {
+            phantomJSDriver.manage().window().setSize(new Dimension(1920, 1080));
+            phantomJSDriver.manage().timeouts().implicitlyWait(Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
+            phantomJSDriver.get(url);
+           /* WebDriverWait webDriverWait = new WebDriverWait(phantomJSDriver, Duration.of(timeOut, TimeUnit.SECONDS.toChronoUnit()));
+            WebElement locatorElement = phantomJSDriver.findElement(locator);
+            webDriverWait.until(ExpectedConditions.visibilityOf(locatorElement));*/
+            Screenshot screenshot = new AShot().shootingStrategy(ShootingStrategies.viewportPasting(1200)).takeScreenshot(phantomJSDriver);
+            try {
+                screenshotConvertPDF(screenshot, pdfSavePath);
+            } catch (DocumentException | IOException e) {
+                throw new GXBusinessException("获取PDF数据失败", e);
+            }
+            return phantomJSDriver.getPageSource();
+        } finally {
+            phantomJSDriver.close();
         }
     }
 

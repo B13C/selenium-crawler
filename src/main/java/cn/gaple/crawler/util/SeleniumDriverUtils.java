@@ -1,12 +1,19 @@
 package cn.gaple.crawler.util;
 
 import cn.hutool.core.lang.Dict;
+import cn.maple.core.framework.util.GXResultUtils;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.phantomjs.PhantomJSDriver;
+import org.openqa.selenium.phantomjs.PhantomJSDriverService;
+import org.openqa.selenium.remote.Browser;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -111,5 +118,24 @@ public class SeleniumDriverUtils {
         firefoxOptions.setCapability("network.http.proxy.pipelining", true);
         firefoxOptions.setCapability("acceptInsecureCerts", false);
         return new FirefoxDriver(firefoxOptions);
+    }
+
+
+    /**
+     * 获取 PhantomJSDriver实列
+     *
+     * @param phantomJSDriverPath phantomJSDriverPath的可执行文件路径
+     * @return PhantomJSDriver
+     */
+    public static PhantomJSDriver phantomJSDriver(String phantomJSDriverPath) {
+        DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
+        desiredCapabilities.setCapability("acceptSslCerts", false);
+        desiredCapabilities.setCapability("takesScreenshot", true);
+        desiredCapabilities.setCapability("cssSelectorsEnabled", true);
+        desiredCapabilities.setBrowserName(Browser.CHROME.browserName());
+        desiredCapabilities.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY, phantomJSDriverPath);
+        PhantomJSDriver phantomJSDriver = new PhantomJSDriver(desiredCapabilities);
+        phantomJSDriver.manage().window().setSize(new Dimension(1960, 1080));
+        return phantomJSDriver;
     }
 }

@@ -1,5 +1,6 @@
 package cn.gaple.crawler.controller;
 
+import cn.gaple.crawler.util.SeleniumCrawlerUtils;
 import cn.hutool.core.lang.Dict;
 import cn.maple.core.framework.controller.GXBaseController;
 import cn.maple.core.framework.util.GXResultUtils;
@@ -209,6 +210,7 @@ public class WebDriverController implements GXBaseController {
         phantomJSDriver.get(url);
         String pageSource = phantomJSDriver.getPageSource();
         System.out.println(pageSource);
+        phantomJSDriver.close();
         return GXResultUtils.ok(Dict.create().set("username", "PPP"));
     }
 
@@ -229,7 +231,7 @@ public class WebDriverController implements GXBaseController {
         //firefoxOptions.addArguments("blink-settings=imagesEnabled=false", "--disable-gpu");
         //firefoxOptions.addArguments("--windows-size=1920,1080");
         //firefoxOptions.setHeadless(true);
-       // options.addArguments("--width=2560", "--height=1440");
+        // options.addArguments("--width=2560", "--height=1440");
         //禁止GPU渲染
         options.addArguments("--disable-gpu");
         //忽略错误   不能添加  添加之后报错
@@ -263,9 +265,9 @@ public class WebDriverController implements GXBaseController {
         options.setCapability("network.http.pipelining", true);
         options.setCapability("network.http.proxy.pipelining", true);
         //options.setCapability("network.http.pipelining.maxrequests", 32);
-        options.setCapability("acceptInsecureCerts" , false);
+        options.setCapability("acceptInsecureCerts", false);
         FirefoxDriver driver = new FirefoxDriver(options);
-        driver.manage().window().setSize(new Dimension(1920 , 1080));
+        driver.manage().window().setSize(new Dimension(1920, 1080));
         driver.manage().timeouts().implicitlyWait(Duration.of(120, TimeUnit.SECONDS.toChronoUnit()));
         driver.get(url);
         //WebElement detailinfo = driver.findElement(By.ByCssSelector.className("qkxq-content"));
@@ -486,6 +488,16 @@ public class WebDriverController implements GXBaseController {
         }
 */
         driver.quit();
+        return GXResultUtils.ok(Dict.create().set("username", "PPP"));
+    }
+
+
+    @GetMapping("/pp7")
+    public GXResultUtils<Dict> pp7() {
+        //String url = "https://d.wanfangdata.com.cn/periodical/pp202222001";
+        String url = "https://mp.weixin.qq.com/s/4qMNsnb_UbaVfx5bo_HrLQ";
+        String js_link_dialog = SeleniumCrawlerUtils.getPDFByPhantomJSDriver(url, "E:\\phantomjs-2.1.1-windows\\bin\\phantomjs.exe", By.className("profile_arrow_wrp"),"e:\\kkk.pdf", 120);
+        System.out.println(js_link_dialog);
         return GXResultUtils.ok(Dict.create().set("username", "PPP"));
     }
 }
