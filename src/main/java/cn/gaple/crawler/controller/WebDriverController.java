@@ -1,6 +1,7 @@
 package cn.gaple.crawler.controller;
 
 import cn.gaple.crawler.util.SeleniumCrawlerUtils;
+import cn.gaple.crawler.util.SeleniumDriverUtils;
 import cn.hutool.core.lang.Dict;
 import cn.maple.core.framework.controller.GXBaseController;
 import cn.maple.core.framework.util.GXResultUtils;
@@ -494,10 +495,13 @@ public class WebDriverController implements GXBaseController {
 
     @GetMapping("/pp7")
     public GXResultUtils<Dict> pp7() {
+        String driverPath = "E:\\phantomjs-2.1.1-windows\\bin\\phantomjs.exe";
         //String url = "https://d.wanfangdata.com.cn/periodical/pp202222001";
         String url = "https://mp.weixin.qq.com/s/4qMNsnb_UbaVfx5bo_HrLQ";
-        String js_link_dialog = SeleniumCrawlerUtils.getPDFByPhantomJSDriver(url, "E:\\phantomjs-2.1.1-windows\\bin\\phantomjs.exe", By.className("profile_arrow_wrp"),"e:\\kkk.pdf", 120);
+        PhantomJSDriver phantomJSDriver = SeleniumDriverUtils.phantomJSDriver(driverPath);
+        String js_link_dialog = SeleniumCrawlerUtils.getPDFByPhantomJSDriver(phantomJSDriver, url, By.className("profile_arrow_wrp"), "e:\\kkk.pdf", 120);
         System.out.println(js_link_dialog);
+        phantomJSDriver.close();
         return GXResultUtils.ok(Dict.create().set("username", "PPP"));
     }
 }
